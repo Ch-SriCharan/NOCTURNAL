@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Patient Follow-up</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Emergency Flashing Banner -->
+    <div id="emergencyBanner" class="hidden">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span id="emergencyText" data-i18n="emergency_banner">CRITICAL EMERGENCY DETECTED. PLEASE CONSULT A DOCTOR
+            IMMEDIATELY.</span>
+    </div>
+
+    <!-- Floating Global Alert -->
+    <div id="floatingAlert" class="hidden"></div>
+
+    <!-- Theme Toggle -->
+    <button id="themeToggle" class="btn-icon theme-toggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- App Container -->
+    <div class="app-container">
+
+        <!-- 1. Splash Screen -->
+        <section id="splashScreen" class="page active">
+            <div class="glass-card splash-content">
+                <div class="logo-container">
+                    <i class="fas fa-heartbeat pulse-anim logo-icon"></i>
+                </div>
+                <h1 class="gradient-text" data-i18n="app_title">Autonomous Patient<br>Follow-up System</h1>
+                <p class="subtitle" data-i18n="app_subtitle">AI-powered post-surgery patient monitoring</p>
+                <button class="btn-glow" onclick="navTo('languageScreen')" data-i18n="btn_get_started">Get
+                    Started</button>
+            </div>
+        </section>
+
+        <!-- 2. Language Selection -->
+        <section id="languageScreen" class="page hidden">
+            <div class="glass-card">
+                <h2 data-i18n="select_language_title">Select Your Language</h2>
+                <p data-i18n="select_language_subtitle">Choose your preferred language for the app experience.</p>
+                <div class="lang-options mt-2">
+                    <button class="btn-outline" onclick="setLanguage('English')">English</button>
+                    <button class="btn-outline" onclick="setLanguage('Hindi')">हिन्दी</button>
+                    <button class="btn-outline" onclick="setLanguage('Telugu')">తెలుగు</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Profile Collection -->
+        <section id="profileScreen" class="page hidden">
+            <div class="glass-card">
+                <div class="header-nav mb-2">
+                    <button class="btn-icon" onclick="navTo('languageScreen')"><i
+                            class="fas fa-arrow-left"></i></button>
+                    <h2 data-i18n="enter_details_title">Enter Patient Details</h2>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="label_full_name">Full Name</label>
+                    <input type="text" id="patientName" data-i18n-placeholder="placeholder_name" placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="label_phone">Phone Number (with country code)</label>
+                    <input type="text" id="patientPhone" data-i18n-placeholder="placeholder_phone"
+                        placeholder="+1234567890">
+                </div>
+                <button class="btn-glow mt-2 w-100" onclick="saveProfile()" data-i18n="btn_continue">Continue</button>
+            </div>
+        </section>
+
+        <!-- 4. Main Menu (Dashboard) -->
+        <section id="mainMenu" class="page hidden">
+            <div class="glass-card">
+                <div class="header-nav mb-2">
+                    <button class="btn-icon" onclick="navTo('profileScreen')"><i class="fas fa-arrow-left"></i></button>
+                    <h2 data-i18n="dashboard_title">Dashboard</h2>
+                </div>
+                <p id="welcomeText" class="mb-2">Hello, Patient</p>
+
+                <div class="grid-2">
+                    <div class="menu-card" onclick="navTo('regularMenu')">
+                        <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
+                        <h3 data-i18n="regular_checkup_title">Regular Check-up</h3>
+                        <p data-i18n="regular_checkup_desc">Vitals entry & Appointments</p>
+                    </div>
+
+                    <div class="menu-card" onclick="startPostOpFlow()">
+                        <div class="card-icon"><i class="fas fa-stethoscope"></i></div>
+                        <h3 data-i18n="postop_title">Post-Op</h3>
+                        <p data-i18n="postop_desc">AI Assistant Chat</p>
+                    </div>
+                </div>
+
+                <div class="customer-care-section mt-2">
+                    <button class="btn-danger w-100 btn-glow" onclick="callCustomerCare()">
+                        <i class="fas fa-phone-alt"></i> <span data-i18n="btn_call_care">Can't reach AI? Call Customer
+                            Care</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Regular Menu -->
+        <section id="regularMenu" class="page hidden">
+            <div class="glass-card">
+                <div class="header-nav mb-2">
+                    <button class="btn-icon" onclick="navTo('mainMenu')"><i class="fas fa-arrow-left"></i></button>
+                    <h2 data-i18n="regular_checkup_title">Regular Check-up</h2>
+                </div>
+
+                <div class="grid-2">
+                    <div class="menu-card" onclick="navTo('basicCheckup')">
+                        <div class="card-icon"><i class="fas fa-vials"></i></div>
+                        <h3 data-i18n="basic_checkup_title">Basic Check-up</h3>
+                        <p data-i18n="basic_checkup_desc">Enter your vitals</p>
+                    </div>
+
+                    <div class="menu-card" onclick="navTo('specializedTreatment')">
+                        <div class="card-icon"><i class="fas fa-user-md"></i></div>
+                        <h3 data-i18n="special_treatment_title">Specialized Treatment</h3>
+                        <p data-i18n="special_treatment_desc">Book an appointment</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Basic Checkup (Vitals) -->
+        <section id="basicCheckup" class="page hidden">
+            <div class="glass-card">
+                <div class="header-nav mb-2">
+                    <button class="btn-icon" onclick="navTo('regularMenu')"><i class="fas fa-arrow-left"></i></button>
+                    <h2 data-i18n="basic_checkup_title">Basic Check-up</h2>
+                </div>
+
+                <div class="vital-cards-container">
+                    <!-- BP -->
+                    <div class="vital-card" onclick="toggleVital('bpDetails')">
+                        <div class="vital-header">
+                            <div><i class="fas fa-heartbeat"></i> <span data-i18n="vital_bp">Blood Pressure</span></div>
+                            <span id="bpBadge" class="badge">--</span>
+                        </div>
+                        <div id="bpDetails" class="vital-inputs hidden">
+                            <input type="number" id="bpSystolic" data-i18n-placeholder="placeholder_bp_sys"
+                                placeholder="Systolic (e.g. 120)">
+                            <input type="number" id="bpDiastolic" data-i18n-placeholder="placeholder_bp_dia"
+                                placeholder="Diastolic (e.g. 80)">
+                        </div>
+                    </div>
+                    <!-- Blood Sugar -->
+                    <div class="vital-card" onclick="toggleVital('sugarDetails')">
+                        <div class="vital-header">
+                            <div><i class="fas fa-tint"></i> <span data-i18n="vital_sugar">Blood Sugar</span></div>
+                            <span id="sugarBadge" class="badge">--</span>
+                        </div>
+                        <div id="sugarDetails" class="vital-inputs hidden">
+                            <input type="number" id="sugar" data-i18n-placeholder="placeholder_sugar"
+                                placeholder="Level mg/dL">
+                        </div>
+                    </div>
+                    <!-- BMI -->
+                    <div class="vital-card" onclick="toggleVital('bmiDetails')">
+                        <div class="vital-header">
+                            <div><i class="fas fa-weight"></i> <span data-i18n="vital_bmi">BMI</span></div>
+                            <span id="bmiBadge" class="badge">--</span>
+                        </div>
+                        <div id="bmiDetails" class="vital-inputs hidden">
+                            <input type="number" id="bmiVal" data-i18n-placeholder="placeholder_bmi"
+                                placeholder="BMI Value">
+                        </div>
+                    </div>
+                    <!-- Temperature -->
+                    <div class="vital-card" onclick="toggleVital('tempDetails')">
+                        <div class="vital-header">
+                            <div><i class="fas fa-thermometer-half"></i> <span data-i18n="vital_temp">Temperature</span>
+                            </div>
+                            <span id="tempBadge" class="badge">--</span>
+                        </div>
+                        <div id="tempDetails" class="vital-inputs hidden">
+                            <input type="number" id="tempVal" data-i18n-placeholder="placeholder_temp" placeholder="°F">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-glow mt-2 w-100" onclick="analyzeVitals()" data-i18n="btn_analyze">Analyze
+                    Vitals</button>
+
+                <div id="vitalsResult" class="result-box hidden mt-2">
+                    <h3 id="vitalsSeverityText"></h3>
+                    <p id="vitalsMessageText"></p>
+                    <button id="vitalsBookBtn" class="btn-glow w-100 mt-1 hidden"
+                        onclick="navTo('specializedTreatment')" data-i18n="btn_book_doc">Book Doctor
+                        Appointment</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Specialized Treatment (Appointments) -->
+        <section id="specializedTreatment" class="page hidden">
+            <div class="glass-card">
+                <div class="header-nav mb-2">
+                    <button class="btn-icon" onclick="navTo('regularMenu')"><i class="fas fa-arrow-left"></i></button>
+                    <h2 data-i18n="special_treatment_title">Book Appointment</h2>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="label_doctor">Select Doctor / Specialist</label>
+                    <select id="doctorSelect" class="input-modern">
+                        <option value="Dr. Smith (Cardiologist)">Dr. Smith (Cardiologist)</option>
+                        <option value="Dr. Jane (General Physician)">Dr. Jane (General Physician)</option>
+                        <option value="Dr. Ali (Endocrinologist)">Dr. Ali (Endocrinologist)</option>
+                        <option value="Dr. Roberts (Orthopedic Surgeon)">Dr. Roberts (Orthopedic Surgeon)</option>
+                        <option value="Dr. Lee (Neurologist)">Dr. Lee (Neurologist)</option>
+                        <option value="Dr. Patel (Gastroenterologist)">Dr. Patel (Gastroenterologist)</option>
+                        <option value="Dr. Garcia (Pulmonologist)">Dr. Garcia (Pulmonologist)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="label_date">Date</label>
+                    <input type="date" id="aptDate" class="input-modern">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="label_time">Time</label>
+                    <input type="time" id="aptTime" class="input-modern">
+                </div>
+                <button class="btn-glow w-100 mt-2" onclick="bookAppointment()" data-i18n="btn_confirm_apt">Confirm
+                    Appointment</button>
+            </div>
+        </section>
+
+        <!-- 8. Post-Op Info collection (Surgery Type) -->
+        <section id="postOpCollect" class="page hidden">
+            <div class="glass-card">
+                <div class="header-nav mb-2">
+                    <button class="btn-icon" onclick="navTo('mainMenu')"><i class="fas fa-arrow-left"></i></button>
+                    <h2 data-i18n="postop_setup_title">Post-Op Setup</h2>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="label_surgery_type">What surgery did you recently have?</label>
+                    <input type="text" id="surgeryType" data-i18n-placeholder="placeholder_surgery"
+                        placeholder="e.g. Knee Replacement" class="input-modern">
+                </div>
+                <button class="btn-glow w-100 mt-2" onclick="navTo('chatbotScreen')" data-i18n="btn_start_ai">Start AI
+                    Follow-up</button>
+            </div>
+        </section>
+
+        <!-- 9. AI Chatbot Interface -->
+        <section id="chatbotScreen" class="page hidden">
+            <div class="glass-card chat-wrapper">
+                <div class="header-nav mb-1 p-1">
+                    <button class="btn-icon" onclick="navTo('mainMenu')"><i class="fas fa-arrow-left"></i></button>
+                    <div class="ai-header-info">
+                        <i class="fas fa-robot text-glow"></i>
+                        <h3 data-i18n="ai_assistant_title">Medical AI Assistant</h3>
+                    </div>
+                    <button class="btn-icon btn-danger-icon tooltip-anchor" onclick="callCustomerCare()">
+                        <i class="fas fa-phone-alt"></i>
+                    </button>
+                </div>
+
+                <div class="chat-container wrapper-scroll" id="chatBox">
+                    <div class="message ai-msg">
+                        <div class="msg-bubble" data-i18n="ai_welcome_msg">Hello, I am your post-operative AI assistant.
+                            How are you feeling today? What are your symptoms?</div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <button type="button" class="btn-icon mic-btn" id="micBtn" onclick="toggleVoice()"><i
+                            class="fas fa-microphone"></i></button>
+                    <input type="text" id="chatInput" data-i18n-placeholder="placeholder_chat"
+                        placeholder="Type your symptoms..." onkeypress="handleChatKey(event)">
+                    <button type="button" class="btn-icon send-btn" onclick="sendMessage()"><i
+                            class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

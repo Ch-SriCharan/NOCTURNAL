@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MedFollow AI — Language</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <style>
+        .lang-grid {
+            display: grid;
+            gap: 1rem;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 2rem;
+        }
+
+        .lang-card {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            padding: 1.4rem 1.8rem;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.22s;
+            text-align: left;
+            width: 100%;
+            font-family: inherit;
+            color: var(--text);
+        }
+
+        .lang-card:hover {
+            border-color: var(--accent);
+            background: var(--card-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(25, 118, 210, 0.18);
+        }
+
+        .lang-card.active {
+            border-color: var(--accent);
+            background: rgba(25, 118, 210, 0.12);
+        }
+
+        .lang-flag {
+            font-size: 2.4rem;
+            flex-shrink: 0;
+        }
+
+        .lang-info {
+            flex: 1;
+        }
+
+        .lang-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .lang-native {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-top: 0.2rem;
+        }
+
+        .lang-check {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            transition: all 0.2s;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lang-card.active .lang-check {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            font-size: 0.75rem;
+        }
+
+        .page-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <div class="page-icon">🌐</div>
+        <h1 class="page-title">Select Language</h1>
+        <p class="page-sub">Choose your preferred language for the session</p>
+
+        <form method="POST" action="/language" id="langForm">
+            <input type="hidden" name="language" id="langInput" value="English" />
+            <div class="lang-grid">
+                <button type="button" class="lang-card active" id="btn-English" onclick="selectLang('English')">
+                    <span class="lang-flag">🇬🇧</span>
+                    <div class="lang-info">
+                        <div class="lang-name">English</div>
+                        <div class="lang-native">English</div>
+                    </div>
+                    <div class="lang-check" id="chk-English">✓</div>
+                </button>
+                <button type="button" class="lang-card" id="btn-Hindi" onclick="selectLang('Hindi')">
+                    <span class="lang-flag">🇮🇳</span>
+                    <div class="lang-info">
+                        <div class="lang-name">Hindi</div>
+                        <div class="lang-native">हिंदी</div>
+                    </div>
+                    <div class="lang-check" id="chk-Hindi"></div>
+                </button>
+                <button type="button" class="lang-card" id="btn-Telugu" onclick="selectLang('Telugu')">
+                    <span class="lang-flag">🇮🇳</span>
+                    <div class="lang-info">
+                        <div class="lang-name">Telugu</div>
+                        <div class="lang-native">తెలుగు</div>
+                    </div>
+                    <div class="lang-check" id="chk-Telugu"></div>
+                </button>
+            </div>
+            <button class="btn-primary" type="submit" style="margin-top:2rem;">Continue →</button>
+        </form>
+    </div>
+
+    <script>
+        const langs = ['English', 'Hindi', 'Telugu'];
+        function selectLang(lang) {
+            langs.forEach(l => {
+                document.getElementById('btn-' + l).classList.toggle('active', l === lang);
+                const chk = document.getElementById('chk-' + l);
+                chk.textContent = l === lang ? '✓' : '';
+            });
+            document.getElementById('langInput').value = lang;
+        }
+    </script>
+</body>
+
+</html>

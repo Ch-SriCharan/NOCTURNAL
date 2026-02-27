@@ -1,0 +1,6 @@
+[2026-02-27 23:25:37] Patient: John Doe | Option: 1 | Outcome: Patient feeling fine
+[2026-02-27 23:28:27] Patient: John Doe | Option: 2 | Outcome: Patient has mild symptoms
+[2026-02-27 23:34:09] Patient: John Doe | Option: 3 | Outcome: Patient condition worsened — DOCTOR ALERT TRIGGERED
+[2026-02-28 00:27:54] Patient: Anjali Singh | Option: 2 | Outcome: Patient has mild symptoms
+[2026-02-28 01:01:25] Patient: Priya Sharma | Language: Hindi | Option: 2 | Outcome: रोगी को हल्के लक्षण हैं
+[2026-02-28 03:02:52] APPOINTMENT | Patient: Ravi | Doctor: Dr. Smith (Cardiologist) | Date: 2026-03-05 | Time: 10:30 | Lang: English

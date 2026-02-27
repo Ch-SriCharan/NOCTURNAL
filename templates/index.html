@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hospital Follow-up System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0b1120;
+            --surface: #111827;
+            --card: #1a2236;
+            --accent: #3b82f6;
+            --accent2: #06b6d4;
+            --success: #10b981;
+            --warn: #f59e0b;
+            --danger: #ef4444;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --border: #1e2d45;
+            --radius: 16px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        /* ── Header ── */
+        .header {
+            text-align: center;
+        }
+
+        .header .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            background: rgba(59, 130, 246, .12);
+            border: 1px solid rgba(59, 130, 246, .3);
+            color: var(--accent);
+            border-radius: 50px;
+            padding: .35rem 1.1rem;
+            font-size: .78rem;
+            font-weight: 600;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #e2e8f0 30%, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .header p {
+            margin-top: .6rem;
+            color: var(--muted);
+            font-size: .95rem;
+        }
+
+        /* ── Card ── */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2.5rem 3rem;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            box-shadow: 0 8px 48px rgba(0, 0, 0, .45);
+        }
+
+        /* ── Patient Info ── */
+        .patient-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .patient-info .details {
+            flex: 1;
+        }
+
+        .patient-info .name {
+            font-weight: 600;
+            font-size: .95rem;
+        }
+
+        .patient-info .sub {
+            color: var(--muted);
+            font-size: .78rem;
+            margin-top: .15rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, .2);
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 3px rgba(16, 185, 129, .25);
+            }
+
+            50% {
+                box-shadow: 0 0 0 7px rgba(16, 185, 129, .05);
+            }
+        }
+
+        /* ── Call Button ── */
+        .call-btn {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            box-shadow: 0 0 0 0 rgba(59, 130, 246, .5);
+            animation: pulse-ring 2.5s ease-in-out infinite;
+            transition: transform .15s, box-shadow .15s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: .4rem;
+            margin: 0 auto 1.5rem;
+        }
+
+        .call-btn:hover {
+            transform: scale(1.06);
+            animation-play-state: paused;
+        }
+
+        .call-btn:active {
+            transform: scale(.97);
+        }
+
+        .call-btn.loading {
+            animation: none;
+            background: linear-gradient(135deg, #1d4ed8, #0e7490);
+            cursor: wait;
+        }
+
+        .call-btn .icon {
+            font-size: 2.8rem;
+            line-height: 1;
+        }
+
+        .call-btn .label {
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .85);
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, .55);
+            }
+
+            70% {
+                box-shadow: 0 0 0 22px rgba(59, 130, 246, .0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, .0);
+            }
+        }
+
+        /* ── Status Box ── */
+        #status-box {
+            min-height: 50px;
+            border-radius: 12px;
+            padding: .85rem 1.2rem;
+            font-size: .88rem;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: .7rem;
+            border: 1px solid transparent;
+            text-align: left;
+            transition: all .3s;
+        }
+
+        #status-box.show {
+            display: flex;
+        }
+
+        #status-box.success {
+            background: rgba(16, 185, 129, .1);
+            border-color: rgba(16, 185, 129, .35);
+            color: #34d399;
+        }
+
+        #status-box.error {
+            background: rgba(239, 68, 68, .1);
+            border-color: rgba(239, 68, 68, .35);
+            color: #f87171;
+        }
+
+        #status-box.info {
+            background: rgba(59, 130, 246, .1);
+            border-color: rgba(59, 130, 246, .35);
+            color: #93c5fd;
+        }
+
+        #status-box .ico {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        /* ── Log Section ── */
+        .log-section {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .log-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: .75rem;
+        }
+
+        .log-header h3 {
+            font-size: .85rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .07em;
+        }
+
+        .refresh-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--muted);
+            padding: .3rem .75rem;
+            font-size: .75rem;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .refresh-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        #log-list {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            min-height: 80px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: .78rem;
+            font-family: 'Courier New', monospace;
+            color: var(--muted);
+        }
+
+        #log-list .entry {
+            padding: .3rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .05);
+        }
+
+        #log-list .entry:last-child {
+            border-bottom: none;
+        }
+
+        #log-list .entry.alert {
+            color: #f87171;
+        }
+
+        #log-list .empty {
+            text-align: center;
+            color: var(--border);
+            padding: 1.5rem 0;
+        }
+
+        /* ── Instructions ── */
+        .hint {
+            font-size: .75rem;
+            color: var(--muted);
+            margin-top: .75rem;
+        }
+
+        .hint code {
+            background: rgba(255, 255, 255, .07);
+            border-radius: 6px;
+            padding: .1rem .45rem;
+            font-size: .73rem;
+            color: var(--accent2);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="badge">🏥 Offline IVR &nbsp;•&nbsp; Fully Local</div>
+        <h1>Hospital Follow-up System</h1>
+        <p>Automated patient check-in — no internet required</p>
+    </div>
+
+    <div class="card">
+        <div class="patient-info">
+            <div class="avatar">👤</div>
+            <div class="details">
+                <div class="name">John Doe</div>
+                <div class="sub">Patient ID: #00421 &nbsp;|&nbsp; Post-discharge follow-up</div>
+            </div>
+            <div class="status-dot"></div>
+        </div>
+
+        <button class="call-btn" id="callBtn" onclick="initiateCall()">
+            <span class="icon">📞</span>
+            <span class="label">Call Patient</span>
+        </button>
+
+        <div id="status-box"></div>
+        <p class="hint">A terminal window will open — enter <code>1</code>, <code>2</code>, or <code>3</code> to
+            respond.</p>
+    </div>
+
+    <div class="log-section">
+        <div class="log-header">
+            <h3>📋 Response Log</h3>
+            <button class="refresh-btn" onclick="loadLog()">↻ Refresh</button>
+        </div>
+        <div id="log-list">
+            <div class="empty">No responses logged yet.</div>
+        </div>
+    </div>
+
+    <script>
+        function setStatus(type, icon, msg) {
+            const box = document.getElementById('status-box');
+            box.className = `show ${type}`;
+            box.innerHTML = `<span class="ico">${icon}</span><span>${msg}</span>`;
+        }
+
+        async function initiateCall() {
+            const btn = document.getElementById('callBtn');
+            btn.classList.add('loading');
+            btn.onclick = null;
+            setStatus('info', '⏳', 'Launching IVR… opening terminal window');
+
+            try {
+                const res = await fetch('/call');
+                const data = await res.json();
+                if (data.status === 'success') {
+                    setStatus('success', '✅', data.message);
+                    setTimeout(loadLog, 5000);
+                } else {
+                    setStatus('error', '❌', data.message);
+                }
+            } catch (e) {
+                setStatus('error', '❌', 'Could not reach the server. Is app.py running?');
+            } finally {
+                btn.classList.remove('loading');
+                btn.onclick = initiateCall;
+            }
+        }
+
+        async function loadLog() {
+            try {
+                const res = await fetch('/log');
+                const data = await res.json();
+                const list = document.getElementById('log-list');
+                if (!data.entries || data.entries.length === 0) {
+                    list.innerHTML = '<div class="empty">No responses logged yet.</div>';
+                    return;
+                }
+                list.innerHTML = data.entries.slice(-20).reverse()
+                    .map(e => `<div class="entry${e.includes('worsened') ? ' alert' : ''}">${e}</div>`)
+                    .join('');
+            } catch (_) { }
+        }
+
+        loadLog();
+        setInterval(loadLog, 10000);
+    </script>
+</body>
+
+</html>

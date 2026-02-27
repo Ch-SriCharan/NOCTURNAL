@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MedFollow AI — Appointments</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <style>
+        .appt-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem 1.8rem;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .field-group {
+            margin-bottom: 1.4rem;
+            text-align: left;
+        }
+
+        .field-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .field-input,
+        .field-select,
+        .field-textarea {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .field-input:focus,
+        .field-select:focus,
+        .field-textarea:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.12);
+        }
+
+        .field-select {
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .field-textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width:420px) {
+            .row-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .success-banner {
+            background: rgba(74, 222, 128, 0.1);
+            border: 1.5px solid rgba(74, 222, 128, 0.3);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            text-align: center;
+            display: none;
+            animation: fadeUp 0.4s ease;
+        }
+
+        .success-banner.show {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 3rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .success-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #4ade80;
+        }
+
+        .success-detail {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-top: 0.5rem;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .page-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upcoming-card {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .upcoming-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted);
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .appt-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .appt-row:last-child {
+            border-bottom: none;
+        }
+
+        .appt-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .appt-info {
+            flex: 1;
+        }
+
+        .appt-doctor {
+            font-weight: 600;
+            font-size: 0.88rem;
+        }
+
+        .appt-when {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 0.15rem;
+        }
+
+        .appt-status {
+            font-size: 0.72rem;
+            padding: 0.2rem 0.7rem;
+            border-radius: 99px;
+            background: rgba(25, 118, 210, 0.12);
+            color: var(--accent);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <div style="display:flex;align-items:center;gap:0.7rem;align-self:flex-start;margin-bottom:0.5rem;">
+            <a href="/service" style="color:var(--muted);text-decoration:none;font-size:1.4rem;">‹</a>
+            <span style="font-size:0.85rem;color:var(--muted);">{{ t.back_services }}</span>
+        </div>
+        <div class="page-icon">📅</div>
+        <h1 class="page-title">{{ t.appt_title }}</h1>
+        <p class="page-sub">{{ appt_sub }}</p>
+
+        <div class="appt-card" id="formCard">
+            <form id="apptForm" onsubmit="submitAppt(event)">
+                <div class="field-group">
+                    <label class="field-label">{{ t.doctor_label }}</label>
+                    <select class="field-select" id="doctor" required>
+                        <option value="">{{ t.doctor_ph }}</option>
+                        <option>Dr. Ramesh Gupta — Cardiologist</option>
+                        <option>Dr. Anita Sharma — General Physician</option>
+                        <option>Dr. Vikram Nair — Orthopedic Surgeon</option>
+                        <option>Dr. Priya Menon — Endocrinologist</option>
+                        <option>Dr. Sanjay Rao — Pulmonologist</option>
+                        <option>Dr. Kavitha Reddy — Gynecologist</option>
+                        <option>Dr. Arun Kumar — Neurologist</option>
+                    </select>
+                </div>
+                <div class="row-2">
+                    <div class="field-group">
+                        <label class="field-label">{{ t.date_label }}</label>
+                        <input class="field-input" id="apptDate" type="date" required />
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">{{ t.time_label }}</label>
+                        <select class="field-select" id="apptTime" required>
+                            <option value="">{{ t.time_ph }}</option>
+                            <option>09:00 AM</option>
+                            <option>09:30 AM</option>
+                            <option>10:00 AM</option>
+                            <option>10:30 AM</option>
+                            <option>11:00 AM</option>
+                            <option>11:30 AM</option>
+                            <option>12:00 PM</option>
+                            <option>02:00 PM</option>
+                            <option>02:30 PM</option>
+                            <option>03:00 PM</option>
+                            <option>03:30 PM</option>
+                            <option>04:00 PM</option>
+                            <option>04:30 PM</option>
+                            <option>05:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">{{ t.reason_label }}</label>
+                    <textarea class="field-textarea" id="reason" placeholder="{{ t.reason_ph }}"></textarea>
+                </div>
+                <button class="btn-primary" type="submit" id="apptBtn">{{ t.confirm_btn }}</button>
+            </form>
+        </div>
+
+        <div class="success-banner" id="successBanner">
+            <div class="success-icon">✅</div>
+            <div class="success-title">{{ t.success_title }}</div>
+            <div class="success-detail" id="successDetail"></div>
+            <a href="/service"
+                style="display:inline-block;margin-top:1.2rem;padding:0.7rem 1.8rem;background:var(--grad-blue);color:#fff;border-radius:99px;text-decoration:none;font-weight:700;font-size:0.88rem;">{{
+                t.back_btn }}</a>
+        </div>
+
+        <div class="upcoming-card">
+            <div class="upcoming-title">{{ t.upcoming_title }}</div>
+            <div class="appt-row">
+                <div class="appt-dot"></div>
+                <div class="appt-info">
+                    <div class="appt-doctor">Dr. Anita Sharma — General</div>
+                    <div class="appt-when">Tomorrow · 10:30 AM</div>
+                </div>
+                <span class="appt-status">Confirmed</span>
+            </div>
+            <div class="appt-row">
+                <div class="appt-dot" style="background:#f59e0b;"></div>
+                <div class="appt-info">
+                    <div class="appt-doctor">Dr. Vikram Nair — Orthopedic</div>
+                    <div class="appt-when">Mar 5 · 03:00 PM</div>
+                </div>
+                <span class="appt-status" style="background:rgba(245,158,11,0.1);color:#fbbf24;">Pending</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('apptDate').min = new Date().toISOString().split('T')[0];
+        const BOOKING_LABEL = "{{ t.booking_btn }}";
+        const CONFIRM_LABEL = "{{ t.confirm_btn }}";
+
+        function submitAppt(e) {
+            e.preventDefault();
+            const btn = document.getElementById('apptBtn');
+            btn.textContent = BOOKING_LABEL; btn.disabled = true;
+            const doctor = document.getElementById('doctor').value;
+            const date = document.getElementById('apptDate').value;
+            const time = document.getElementById('apptTime').value;
+            const reason = document.getElementById('reason').value;
+            setTimeout(() => {
+                document.getElementById('formCard').style.display = 'none';
+                const banner = document.getElementById('successBanner');
+                banner.classList.add('show');
+                document.getElementById('successDetail').innerHTML =
+                    `<strong>${doctor}</strong><br>${new Date(date + 'T12:00:00').toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at ${time}` +
+                    (reason ? `<br><br><em>"${reason}"</em>` : '');
+                banner.scrollIntoView({ behavior: 'smooth' });
+            }, 800);
+        }
+    </script>
+</body>
+
+</html>

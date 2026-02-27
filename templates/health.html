@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MedFollow AI — Health Overview</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <style>
+        .vitals-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        @media (max-width:480px) {
+            .vitals-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .vital-card {
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.3rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .vital-card:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.12);
+        }
+
+        .vital-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .vital-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-bottom: 0.5rem;
+        }
+
+        .vital-input {
+            width: 100%;
+            padding: 0.6rem 0.7rem;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .vital-input:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        .vital-unit {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 0.35rem;
+        }
+
+        .analyze-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            padding: 1rem 2.5rem;
+            background: var(--grad-blue);
+            border: none;
+            border-radius: var(--radius);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            min-width: 200px;
+            transition: all 0.22s;
+            margin-top: 1.5rem;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(25, 118, 210, 0.35);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: wait;
+            transform: none;
+        }
+
+        .result-panel {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            display: none;
+            animation: fadeUp 0.4s ease;
+        }
+
+        .result-panel.show {
+            display: block;
+        }
+
+        .result-panel.ok {
+            border-color: rgba(74, 222, 128, 0.35);
+        }
+
+        .result-panel.warn {
+            border-color: rgba(251, 191, 36, 0.35);
+        }
+
+        .result-title {
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .result-body {
+            font-size: 0.87rem;
+            color: var(--muted);
+            white-space: pre-line;
+            line-height: 1.7;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .page-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <div style="display:flex;align-items:center;gap:0.7rem;align-self:flex-start;margin-bottom:0.5rem;">
+            <a href="/service" style="color:var(--muted);text-decoration:none;font-size:1.4rem;">‹</a>
+            <span style="font-size:0.85rem;color:var(--muted);">{{ t.back_services }}</span>
+        </div>
+        <div class="page-icon">📊</div>
+        <h1 class="page-title">{{ t.health_title }}</h1>
+        <p class="page-sub">{{ health_sub }}</p>
+
+        <div class="vitals-grid">
+            <div class="vital-card">
+                <div class="vital-icon">🌡️</div>
+                <div class="vital-label">{{ t.temp_label }}</div>
+                <input id="temperature" class="vital-input" type="number" step="0.1" placeholder="98.6">
+                <div class="vital-unit">{{ t.temp_norm }}</div>
+            </div>
+            <div class="vital-card">
+                <div class="vital-icon">💓</div>
+                <div class="vital-label">{{ t.bp_label }}</div>
+                <input id="blood_pressure" class="vital-input" type="text" placeholder="120/80">
+                <div class="vital-unit">{{ t.bp_norm }}</div>
+            </div>
+            <div class="vital-card">
+                <div class="vital-icon">❤️</div>
+                <div class="vital-label">{{ t.hr_label }}</div>
+                <input id="heart_rate" class="vital-input" type="number" placeholder="72">
+                <div class="vital-unit">{{ t.hr_norm }}</div>
+            </div>
+            <div class="vital-card">
+                <div class="vital-icon">🩸</div>
+                <div class="vital-label">{{ t.sugar_label }}</div>
+                <input id="blood_sugar" class="vital-input" type="number" placeholder="100">
+                <div class="vital-unit">{{ t.sugar_norm }}</div>
+            </div>
+            <div class="vital-card" style="grid-column:span 2;">
+                <div class="vital-icon">🫁</div>
+                <div class="vital-label">{{ t.spo2_label }}</div>
+                <input id="oxygen_level" class="vital-input" type="number" placeholder="98">
+                <div class="vital-unit">{{ t.spo2_norm }}</div>
+            </div>
+        </div>
+
+        <button class="analyze-btn" id="analyzeBtn" onclick="analyzeHealth()">
+            {{ t.analyze_btn }}
+        </button>
+
+        <div class="result-panel" id="resultPanel">
+            <div class="result-title">{{ t.ai_summary_title }}</div>
+            <div class="result-body" id="resultBody"></div>
+        </div>
+    </div>
+
+    <script>
+        const ANALYZING_LABEL = "{{ t.analyzing_btn }}";
+        const ANALYZE_LABEL = "{{ t.analyze_btn }}";
+
+        async function analyzeHealth() {
+            const btn = document.getElementById('analyzeBtn');
+            btn.disabled = true; btn.textContent = ANALYZING_LABEL;
+            const payload = {
+                temperature: document.getElementById('temperature').value,
+                blood_pressure: document.getElementById('blood_pressure').value,
+                heart_rate: document.getElementById('heart_rate').value,
+                blood_sugar: document.getElementById('blood_sugar').value,
+                oxygen_level: document.getElementById('oxygen_level').value,
+            };
+            try {
+                const res = await fetch('/health', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                const panel = document.getElementById('resultPanel');
+                panel.className = `result-panel show ${data.summary.includes('⚠️') ? 'warn' : 'ok'}`;
+                document.getElementById('resultBody').textContent = data.summary;
+                panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } catch (e) {
+                alert('Analysis failed. Is the server running?');
+            } finally {
+                btn.disabled = false; btn.textContent = ANALYZE_LABEL;
+            }
+        }
+    </script>
+</body>
+
+</html>
